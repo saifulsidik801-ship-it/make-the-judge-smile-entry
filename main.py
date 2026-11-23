@@ -25,8 +25,15 @@ def main() -> None:
         raise SystemExit(f"entry is {len(text)} chars, must be 1-200")
     out_dir = os.environ.get("MAKEFUN_OUTPUT_DIR", "/output")
     os.makedirs(out_dir, exist_ok=True)
-    with open(os.path.join(out_dir, "entry.txt"), "w", encoding="utf-8") as f:
+    path = os.path.join(out_dir, "entry.txt")
+    with open(path, "w", encoding="utf-8") as f:
         f.write(text)
+    # Read back what the grader will read: the file must hold exactly the
+    # entry, 1-200 UTF-8 characters, no trailing newline.
+    with open(path, encoding="utf-8") as f:
+        written = f.read()
+    if written != text or not 1 <= len(written) <= 200:
+        raise SystemExit(f"entry.txt failed verification ({len(written)} chars)")
 
 
 if __name__ == "__main__":
